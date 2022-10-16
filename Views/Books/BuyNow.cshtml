@@ -1,0 +1,44 @@
+﻿@model EC2_1701497.ViewModels.OrderViewModel
+
+@{
+    ViewData["Title"] = "Buy Now";
+}
+
+<h1>Buy Now</h1> 
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="BuyNow">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BookOrder.ISBN" />
+            <div class="form-group">
+                <label asp-for="BookOrder.Title" class="control-label"></label>
+                <input asp-for="BookOrder.Title" class="form-control" disabled />
+                <span asp-validation-for="BookOrder.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BookOrder.Price" class="control-label"></label>
+                <input asp-for="BookOrder.Price" class="form-control" disabled />
+                <span asp-validation-for="BookOrder.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Buy Now" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
