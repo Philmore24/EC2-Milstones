@@ -1,0 +1,38 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<EC2_1701497.Models.Book>
+
+@{
+    ViewData["Title"] = "BookDisplay";
+
+}
+<h2>All BOOKS</h2>
+
+<div class="card-deck myBackground">
+    @foreach (var item in Model)
+    {
+        <div class="row row-cols-1 row-cols-md-3">
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="~/Images/@item.Image" class="img-fluid rounded-start" alt="BookImage">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+                            @Html.DisplayNameFor(model => model.Author) :  @Html.DisplayFor(modelItem => item.Author) <br />
+                            @Html.DisplayNameFor(model => model.PublishDate) :  @Html.DisplayFor(modelItem => item.PublishDate) <br />
+                            @Html.DisplayNameFor(model => model.Quantity) :  @Html.DisplayFor(modelItem => item.Quantity) <br />
+                            @Html.DisplayNameFor(model => model.Price) :  @Html.DisplayFor(modelItem => item.Price) <br />
+                            <div class="card-footer text-center">
+                                <a asp-action="BookDisplayDetails" class="btn btn-success" asp-route-id="@item.ISBN">View More</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

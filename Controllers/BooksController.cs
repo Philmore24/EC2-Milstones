@@ -49,12 +49,6 @@ namespace EC2_1701497.Controllers
             return View(book);
         }
 
-        // GET: Books/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // POST: Books/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -83,14 +77,77 @@ namespace EC2_1701497.Controllers
                     Price = book.Price,
                     Image = uniqueFileName
                 };
-
-
                 _context.Add(newbook);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
         }
+       
+
+       
+
+        // GET: Books/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+       
+
+
+        // GET: Books/BuyNow/5
+        public async Task<IActionResult> BuyNow(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Book.FindAsync(id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            OrderViewModel bookmodel = new OrderViewModel();
+            bookmodel.BookOrder = book;
+            bookmodel.Quantity = 1;
+
+            return View(bookmodel);
+        }
+
+
+        // POST: Books/Buy Now/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BuyNow(OrderViewModel bookmodel)
+        {
+            var book = await _context.Book.FindAsync(bookmodel.Id);
+
+            if (book != null)
+            {
+
+                bookmodel.BookOrder = book;
+
+                Order newOrder = new Order();
+                newOrder.BookId = book.ISBN;
+                newOrder.Quantity = bookmodel.Quantity;
+                newOrder.UserId = 1;
+                newOrder.Total = (bookmodel.Quantity * bookmodel.BookOrder.Price);
+                newOrder.OrderDate = DateTime.Now;
+
+                _context.Add(newOrder);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(bookmodel);
+        }
+
+
 
         // GET: Books/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -105,8 +162,7 @@ namespace EC2_1701497.Controllers
             {
                 return NotFound();
             }
-
-            BookCreateViewModel model = new BookCreateViewModel
+            BookCreateViewModel bookmodel = new BookCreateViewModel
             {
                 ISBN = book.ISBN,
                 Title = book.Title,
@@ -114,9 +170,8 @@ namespace EC2_1701497.Controllers
                 PublishDate = book.PublishDate,
                 Quantity = book.Quantity,
                 Price = book.Price
-
             };
-            return View(model);
+            return View(bookmodel);
         }
 
         // POST: Books/Edit/5
@@ -124,9 +179,9 @@ namespace EC2_1701497.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ISBN,Title,Author,PublishDate,Quantity,Price,Image")] BookCreateViewModel model)
+        public async Task<IActionResult> Edit(int id, [Bind("ISBN,Title,Author,PublishDate,Quantity,Price,Image")] BookCreateViewModel bookedit)
         {
-            if (id != model.ISBN)
+            if (id != bookedit.ISBN)
             {
                 return NotFound();
             }
@@ -136,31 +191,32 @@ namespace EC2_1701497.Controllers
                 try
                 {
                     string uniqueFileName = null;
-                    if (model.Image != null)
+                    if (bookedit.Image != null)
                     {
                         string UploadFolder = Path.Combine(_hostEnvironment.WebRootPath, "Images");
-                        uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
+                        uniqueFileName = Guid.NewGuid().ToString() + "_" + bookedit.Image.FileName;
                         string filepath = Path.Combine(UploadFolder, uniqueFileName);
-                        model.Image.CopyTo(new FileStream(filepath, FileMode.Create));
+                        bookedit.Image.CopyTo(new FileStream(filepath, FileMode.Create));
 
                     }
-                    Book book = new Book
+                    Book bookk = new Book
                     {
-                        ISBN = model.ISBN,
-                        Title = model.Title,
-                        Author = model.Author,
-                        PublishDate = model.PublishDate,
-                        Quantity = model.Quantity,
-                        Price = model.Price,
+                        ISBN = bookedit.ISBN,
+                        Title = bookedit.Title,
+                        Author = bookedit.Author,
+                        PublishDate = bookedit.PublishDate,
+                        Quantity = bookedit.Quantity,
+                        Price = bookedit.Price,
                         Image = uniqueFileName
-                        
+
+
                     };
-                    _context.Update(book);
+                    _context.Update(bookk);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BookExists(model.ISBN))
+                    if (!BookExists(bookedit.ISBN))
                     {
                         return NotFound();
                     }
@@ -171,8 +227,9 @@ namespace EC2_1701497.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(model);
+            return View(bookedit);
         }
+
 
         // GET: Books/Delete/5
         public async Task<IActionResult> Delete(int? id)
