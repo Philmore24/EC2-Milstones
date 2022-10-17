@@ -14,9 +14,16 @@ namespace EC2_1701497.Data
             : base(options)
         {
         }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+        }
 
         public DbSet<EC2_1701497.Models.Book> Book { get; set; }
 
         public DbSet<EC2_1701497.Models.Order> Order { get; set; }
+
+        public DbSet<EC2_1701497.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }

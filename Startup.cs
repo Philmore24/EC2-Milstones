@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using EC2_1701497.Data;
 using Microsoft.AspNetCore.Identity;
+using EC2_1701497.Models;
 
 namespace EC2_1701497
 {
@@ -31,7 +32,7 @@ namespace EC2_1701497
             services.AddDbContext<EC2_1701497Context>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("EC2_1701497Context")));
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                .AddEntityFrameworkStores<EC2_1701497Context>();
         }
 
