@@ -4,14 +4,16 @@ using EC2_1701497.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EC2_1701497.Migrations
 {
     [DbContext(typeof(EC2_1701497Context))]
-    partial class EC2_1701497ContextModelSnapshot : ModelSnapshot
+    [Migration("20221017155809_AddIdentity")]
+    partial class AddIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

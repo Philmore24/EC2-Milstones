@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using EC2_1701497.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace EC2_1701497
 {
@@ -29,6 +30,9 @@ namespace EC2_1701497
 
             services.AddDbContext<EC2_1701497Context>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("EC2_1701497Context")));
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+               .AddEntityFrameworkStores<EC2_1701497Context>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
