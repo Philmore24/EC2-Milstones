@@ -1,0 +1,100 @@
+﻿@model EC2_1701497.ViewModels.EditUserViewModel
+@{
+    ViewData["Title"] = "Edit Users";
+   
+}
+
+<h1> Edit Users</h1>
+<hr />
+
+<form method="post" class="mt-3 myBackground">
+    <div class="form-group">
+        <label asp-for="Id" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Id" disabled class="form-control" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Firstname" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Firstname" class="form-control" />
+            <span asp-validation-for="Firstname" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Lastname" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Lastname" class="form-control" />
+            <span asp-validation-for="Lastname" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Username" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Username" class="form-control" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+    </div>
+    @*
+        <div class="form-group row">
+            <label asp-for="DOB" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <input asp-for="DOB" disabled class="form-control" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label asp-for="Gender" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <input asp-for="Gender" disabled class="form-control" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label asp-for="PhoneNumber" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>*@
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a asp-action="ListUsers" class="text-info">Cancel</a>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-header">
+            User Roles
+        </div>
+        <div class="card-body">
+            @if (Model.Roles.Any())
+            {
+                foreach (var role in Model.Roles)
+                {
+                    <h5 class="card-title">@role</h5>
+                }
+            }
+            else
+            {
+                <h5 class="card-title">User not assigned </h5>
+            }
+        </div>
+        <div class="card-footer">
+            <a asp-action="ManagerUserRoles" asp-route-userid="@Model.Id" asp-controller="Administration" class="btn btn-primary">Manage Roles</a>
+        </div>
+    </div>
+
+
+</form>

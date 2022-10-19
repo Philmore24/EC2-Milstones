@@ -1,0 +1,34 @@
+﻿@model EC2_1701497.ViewModels.CreateRoleViewModel
+
+@{
+    ViewData["Title"] = "Create New Role";
+    
+}
+
+<h1>Create New Role</h1>
+
+<hr />
+<div class="row myBackground">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="roleName" class="control-label"></label>
+                <input asp-for="roleName" class="form-control" />
+                <span asp-validation-for="roleName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create Role" class="btn btn-primary" />
+            </div>
+            <div class="form-group">
+                <a asp-action="ListRoles" class="text-info">List Roles</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

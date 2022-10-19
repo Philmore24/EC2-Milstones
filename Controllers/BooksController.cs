@@ -7,22 +7,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EC2_1701497.Data;
 using EC2_1701497.Models;
-using EC2_1701497.ViewModels;
-using Microsoft.Extensions.Hosting.Internal;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using EC2_1701497.ViewModels;
+using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EC2_1701497.Controllers
 {
     public class BooksController : Controller
     {
         private readonly EC2_1701497Context _context;
-        private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IWebHostEnvironment hostingEnvironment;
 
         public BooksController(EC2_1701497Context context, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
-            _hostEnvironment = hostingEnvironment;  
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         // GET: Books
@@ -30,7 +30,27 @@ namespace EC2_1701497.Controllers
         {
             return View(await _context.Book.ToListAsync());
         }
+        public async Task<IActionResult> BookDisplay()
+        {
+            return View(await _context.Book.ToListAsync());
+        }
+        // GET: Books/BookDisplayDetails/5
+        public async Task<IActionResult> BookDisplayDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var book = await _context.Book
+                .FirstOrDefaultAsync(m => m.ISBN == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return View(book);
+        }
         // GET: Books/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -49,6 +69,12 @@ namespace EC2_1701497.Controllers
             return View(book);
         }
 
+        // GET: Books/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
         // POST: Books/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -61,7 +87,7 @@ namespace EC2_1701497.Controllers
                 string uniqueFileName = null;
                 if (book.Image != null)
                 {
-                    string UploadFolder = Path.Combine(_hostEnvironment.WebRootPath, "Images");
+                    string UploadFolder = Path.Combine(hostingEnvironment.WebRootPath, "Images");
                     uniqueFileName = Guid.NewGuid().ToString() + "_" + book.Image.FileName;
                     string filepath = Path.Combine(UploadFolder, uniqueFileName);
                     book.Image.CopyTo(new FileStream(filepath, FileMode.Create));
@@ -83,20 +109,44 @@ namespace EC2_1701497.Controllers
             }
             return View(book);
         }
-       
-
-       
-
-        // GET: Books/Create
-        public IActionResult Create()
+      //  [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ViewPurchases()
         {
-            return View();
+            return View(await _context.Order.ToListAsync());
+        }
+        // GET: Books/Delete/5
+        public async Task<IActionResult> DeletePurchases(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var newOrder = await _context.Order
+                .FirstOrDefaultAsync(m => m.id == id);
+            if (newOrder == null)
+            {
+                return NotFound();
+            }
+
+            return View(newOrder);
         }
 
-       
-
+        // POST: Books/Delete/5
+        [HttpPost, ActionName("DeletePurchases")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmedPurchases(int id)
+        {
+            var newOrder = await _context.Order.FindAsync(id);
+            _context.Order.Remove(newOrder);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ViewPurchases));
+        }
 
         // GET: Books/BuyNow/5
+
+        [Authorize(Roles = "User")]
+
         public async Task<IActionResult> BuyNow(int? id)
         {
             if (id == null)
@@ -117,8 +167,6 @@ namespace EC2_1701497.Controllers
 
             return View(bookmodel);
         }
-
-
         // POST: Books/Buy Now/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -142,12 +190,10 @@ namespace EC2_1701497.Controllers
 
                 _context.Add(newOrder);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(BookDisplay));
             }
             return View(bookmodel);
         }
-
-
 
         // GET: Books/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -193,7 +239,7 @@ namespace EC2_1701497.Controllers
                     string uniqueFileName = null;
                     if (bookedit.Image != null)
                     {
-                        string UploadFolder = Path.Combine(_hostEnvironment.WebRootPath, "Images");
+                        string UploadFolder = Path.Combine(hostingEnvironment.WebRootPath, "Images");
                         uniqueFileName = Guid.NewGuid().ToString() + "_" + bookedit.Image.FileName;
                         string filepath = Path.Combine(UploadFolder, uniqueFileName);
                         bookedit.Image.CopyTo(new FileStream(filepath, FileMode.Create));
@@ -230,7 +276,6 @@ namespace EC2_1701497.Controllers
             return View(bookedit);
         }
 
-
         // GET: Books/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -266,3 +311,4 @@ namespace EC2_1701497.Controllers
         }
     }
 }
+

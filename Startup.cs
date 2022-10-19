@@ -34,6 +34,9 @@ namespace EC2_1701497
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                .AddEntityFrameworkStores<EC2_1701497Context>();
+
+           // services.AddMvc().AddXmlDataContractSerializerFormatters();
+          //  services.AddScoped<EC2>
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +48,7 @@ namespace EC2_1701497
             }
             else
             {
+                app.UseStatusCodePagesWithRedirects("/Error/{0}");
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -53,7 +57,7 @@ namespace EC2_1701497
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

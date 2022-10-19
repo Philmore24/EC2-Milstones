@@ -1,80 +1,31 @@
-﻿using EC2_1701497.Models;
-using EC2_1701497.ViewModels;
+﻿using EC2_1701497.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EC2_1701497.Models;
+using EC2_1701497.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EC2_1701497.Controllers
 {
     public class AccountController : Controller
     {
 
-        public  UserManager<ApplicationUser> userManager { get; }
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
 
-        public SignInManager<ApplicationUser> signInManager { get; }
-
-        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager)
+        private readonly EC2_1701497Context _context;
+        public AccountController(UserManager<ApplicationUser> userManager,
+                                    SignInManager<ApplicationUser> signInManager, EC2_1701497Context context)
         {
+            _context = context;
             this.userManager = userManager;
             this.signInManager = signInManager;
-        }
-
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public IActionResult Register()
-        {
-
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-
-                var CheckEmail = await userManager.FindByEmailAsync(model.Email);
-                if (CheckEmail == null)
-                {
-
-                    var user = new ApplicationUser {
-                        UserName = model.Email,
-                        Email = model.Email,
-                        Firstname = model.Firstname,
-                        Lastname = model.Lastname,
-                    };
-                    var result = await userManager.CreateAsync(user, model.Password);
-
-                    if (result.Succeeded)
-                    {
-
-                       // await userManager.AddToRoleAsync(user, "Customer");
-                        await signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToAction("index", "home");
-                    }
-
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Email already exits");
-                }
-
-               
-            }
-            return View(model);
-
         }
 
         [HttpPost]
@@ -84,6 +35,12 @@ namespace EC2_1701497.Controllers
             return RedirectToAction("index", "home");
         }
 
+        [HttpGet]
+        public IActionResult Register()
+        {
+
+            return View();
+        }
 
         [AcceptVerbs("Get", "Post")]
         public async Task<IActionResult> IsEmailInUse(string Email)
@@ -100,8 +57,79 @@ namespace EC2_1701497.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
 
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    Firstname = model.Firstname,
+                    Lastname = model.Lastname,
+                };
 
+                var result = await userManager.CreateAsync(user, model.Password);
 
+                if (result.Succeeded)
+                {
+
+                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("ListUsers", "Administration");
+                    }
+
+                    await signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Index", "Home");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model, string ReturnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password,
+                                       model.RememberMe, false);
+
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+                    {
+                        return Redirect(ReturnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

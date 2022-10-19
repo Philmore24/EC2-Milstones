@@ -1,0 +1,81 @@
+﻿@model EC2_1701497.ViewModels.EditRoleViewModel
+
+@{
+    ViewData["Title"] = "Edit Roles";
+}
+
+<h1> Edit Roles</h1>
+<hr/>
+
+<form method="post" class="mt-3">
+    <div class="myBackground">
+        <div class="form-group">
+            <label asp-for="Id" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <input asp-for="Id" disabled class="form-control" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label asp-for="RoleName" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <input asp-for="RoleName" class="form-control" />
+                <span asp-validation-for="RoleName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a asp-action="ListRoles">Cancel</a>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Users in this Role
+                </th>
+
+            </tr>
+        </thead>
+        <tbody class="table table-striped">
+            @if (Model.Users.Any())
+            {
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+
+                        <td class="table-secondary">
+                            @user
+                        </td>
+
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="2">
+                       No User Added
+                    </td>
+
+                </tr>
+
+            }
+
+        </tbody>
+        <tfoot class="table table-dark">
+            <tr>
+                <td>
+                    <a asp-action="EditUserInRoles" asp-controller="Administration" asp-route-roleId="@Model.Id" class="btn btn-primary">Add / Remove Users</a>
+                    
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+</form>
+
