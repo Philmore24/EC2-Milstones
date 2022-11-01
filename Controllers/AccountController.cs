@@ -75,7 +75,7 @@ namespace EC2_1701497.Controllers
 
                 if (result.Succeeded)
                 {
-
+                    await userManager.AddToRoleAsync(user, "user");
                     if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
                         return RedirectToAction("ListUsers", "Administration");

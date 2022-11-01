@@ -145,7 +145,7 @@ namespace EC2_1701497.Controllers
 
         // GET: Books/BuyNow/5
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "user")]
 
         public async Task<IActionResult> BuyNow(int? id)
         {
