@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Hosting;
 using EC2_1701497.ViewModels;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace EC2_1701497.Controllers
 {
@@ -18,11 +20,13 @@ namespace EC2_1701497.Controllers
     {
         private readonly EC2_1701497Context _context;
         private readonly IWebHostEnvironment hostingEnvironment;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BooksController(EC2_1701497Context context, IWebHostEnvironment hostingEnvironment)
+        public BooksController(EC2_1701497Context context, IWebHostEnvironment hostingEnvironment, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             this.hostingEnvironment = hostingEnvironment;
+            _userManager = userManager;
         }
 
         // GET: Books
@@ -181,10 +185,12 @@ namespace EC2_1701497.Controllers
 
                 bookmodel.BookOrder = book;
 
-                Order newOrder = new Order();
+                Order newOrder = new Order();  //might try to add the title and user name here to see if show in table showing pruchases
                 newOrder.BookId = book.ISBN;
                 newOrder.Quantity = bookmodel.Quantity;
-                newOrder.UserId = 1;
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                //ApplicationUser user = _userManager.GetUserAsync(userId);
+                newOrder.UserId = userId;
                 newOrder.Total = (bookmodel.Quantity * bookmodel.BookOrder.Price);
                 newOrder.OrderDate = DateTime.Now;
 
@@ -203,6 +209,8 @@ namespace EC2_1701497.Controllers
                 return NotFound();
             }
 
+            //var user = await _userManager.FindByIdAsync(model.UserId);
+            //var username = user.FirstName + " " + user.LastName;
             var book = await _context.Book.FindAsync(id);
             if (book == null)
             {

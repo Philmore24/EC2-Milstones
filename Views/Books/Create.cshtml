@@ -62,10 +62,5 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    $(document).ready(function () {
-    $('.custom-file-input').on("change", function () {
-    var fileName = $(this).val().split("\\").pop();
-    $(this).next('.custom-file-label').htmls(fileName);
-    });
-    }
+    
 }

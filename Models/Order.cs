@@ -16,7 +16,7 @@ namespace EC2_1701497.Models
         public int BookId { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
