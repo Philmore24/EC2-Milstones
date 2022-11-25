@@ -24,7 +24,7 @@ namespace EC2_1701497.Models
         public string Author { get; set; }
 
         [DataType(DataType.Date)]
-        [Required(ErrorMessage = "Enter a publish date")]
+        [Required(ErrorMessage = "Enter a publish date ")]
         [Display(Name = "Book Publish Date")]
         public DateTime PublishDate { get; set; }
 
